@@ -3,8 +3,9 @@ package main
 
 import (
 	"fmt"
-	//"os"
+	"os"
 	"log"
+	"strconv"
 	//"flag"
 	"io/ioutil"
 )
@@ -18,8 +19,9 @@ func main() {
 		log.Fatal( err )
 	}
 
-	for _, file := range files {
+	for i, file := range files {
 		fmt.Println( file.Name() )
+		os.Rename( file.Name(), "t" + strconv.Itoa(i + 1) )
 	}
 
 }
