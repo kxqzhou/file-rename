@@ -6,29 +6,10 @@ import (
 	"os"
 	"log"
 	"flag"
-	"strings"
 	"strconv"
 	"io/ioutil"
 	"path/filepath"
 )
-
-type replFlag []string
-
-func (i *replFlag) String() string {
-	return *i + " " + *(i + 1)
-}
-
-func(i *replFlag) Set(value string) error {
-	args := strings.Split( value, " " )
-
-	if len(args) > 2 {
-		fmt.Println( "Too many arguments to replace flag, ignoring after the first 2" )
-	}
-
-	*i = args[0]
-	*(i + 1) = args[1]
-	return nil
-}
 
 func main() {
 	groupCommand := flag.NewFlagSet( "group", flag.ExitOnError )
@@ -37,8 +18,8 @@ func main() {
 	groupDir := groupCommand.String( "folder", ".", "The folder containing the files to be renamed" )
 	prefix := groupCommand.String( "prefix", "", "A prefix to be appended to the front of each file name" )
 	postfix := groupCommand.String( "postfix", "", "A prefix to be appended to the back of each file name" )
-	var swap replFlag
-	groupCommand.Var( &swap, "replace", "", "A substring and its replacement value, separated by a space" )
+	find := groupCommand.String( "find", "", "A substring to be changed" )
+	replace := groupCommand.String( "replace", "", "The replacement string. Defaults to empty (deletion)" )
 
 	seqDir := seqCommand.String( "folder", ".", "The folder containing the files to be renamed" )
 	name := seqCommand.String( "base", "", "The shared base name among all files in the sequence" )
@@ -50,9 +31,9 @@ func main() {
 
 	switch os.Args[1] {
 	case "group":
-		groupCommand.Parse()
+		groupCommand.Parse( os.Args[2:] )
 	case "seq":
-		seqCommand.Parse()
+		seqCommand.Parse( os.Args[2:] )
 	default:
 		flag.PrintDefaults()
 		os.Exit(1)
@@ -70,6 +51,8 @@ func main() {
 		if err != nil {
 			log.Fatal( err )
 		}
+
+		
 
 	} else if seqCommand.Parsed() {
 		files, err := ioutil.ReadDir( *seqDir )
