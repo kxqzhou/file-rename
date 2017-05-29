@@ -48,6 +48,11 @@ func main() {
 	}
 	*/
 
+	/* TODO
+	need to resolve replacing names leading to two files with the same name
+	commands don't seem to work in tandem (ie group -postifx -prefix will not apply one of them)
+	*/
+
 	if groupCommand.Parsed() {
 		files, err := ioutil.ReadDir( *groupDir )
 		if err != nil {
